@@ -1,10 +1,11 @@
 // Weather API Key 98e20b6373849b7ff4b0fd01a78b1a87
-
+//https://api.openweathermap.org/data/2.5/weather?q=Минск&lang=ru&appid=98e20b6373849b7ff4b0fd01a78b1a87&units=metric
 const time = document.querySelector('.time'); // time
 const actualDate = document.querySelector('.date'); // date 
 
 const greeting = document.querySelector('.greeting'); // Greeting
-const userame = document.querySelector('.name'); // local storage
+const userName = document.querySelector('.name'); // local storage
+const userCity = document.querySelector('.city'); // local storage
 const documentBody = document.querySelector('.body'); // slider
 
 const path = 'https://raw.githubusercontent.com/rolling-scopes-school/stage1-tasks/assets/images/';
@@ -12,7 +13,53 @@ const path = 'https://raw.githubusercontent.com/rolling-scopes-school/stage1-tas
 const nextSlide = document.querySelector('.slide-next');
 const previousSlide = document.querySelector('.slide-prev');
 
+const weatherIcon = document.querySelector('.weather-icon');
+const temperature = document.querySelector('.temperature');
+const weatherDescription = document.querySelector('.weather-description');
+const errorMsg = document.querySelector('.weather-error')
+const wind = document.querySelector('.wind')
+const humidity = document.querySelector('.humidity')
+
 let randNum = Math.floor(Math.random() * (20 - 1 + 1)) + 1;
+let language = 'ru'
+
+userCity.addEventListener('change', () => {
+    localStorage.setItem('city', userCity.value);
+    getWeather();
+})
+
+/*Weather START*/
+
+let weatherArr = [temperature, weatherDescription, humidity, wind]
+
+async function getWeather() {
+    let city = localStorage.getItem('city');
+    const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&lang=${language}&appid=98e20b6373849b7ff4b0fd01a78b1a87&units=metric`
+    const res = await fetch(url);
+    const data = await res.json(); 
+    if( data.cod == "404") {
+        console.log('Error caught!')
+        weatherIcon.className = 'weather-icon owf';
+        weatherArr.forEach((el) => el.textContent = '')
+        errorMsg.textContent = data.message;
+    } else if(data.cod == "400") {
+        console.log('Error caught!')
+        weatherIcon.className = 'weather-icon owf';
+        errorMsg.textContent = 'Enter City name';
+        weatherArr.forEach((el) => el.textContent = '')
+    } else {
+        weatherIcon.className = 'weather-icon owf';
+        weatherIcon.classList.add(`owf-${data.weather[0].id}`);
+        temperature.textContent = `${Math.round(data.main.temp)}°C`;
+        weatherDescription.textContent = data.weather[0].description;
+        humidity.textContent = `Влажность: ${data.main.humidity} %`
+        wind.textContent = `Ветер: ${Math.round(data.wind.speed)} м/с`;
+        errorMsg.textContent = '';
+    }
+}   
+
+
+/*Weather END*/
 
 /*Slider START*/ 
 
@@ -41,14 +88,11 @@ function getTimeOfDay() {
     const date = new Date();
     if(date.getHours() > 4 && date.getHours() < 12){
         return "morning/"
-    }
-    if(date.getHours() > 11 && date.getHours() < 17){
+    } else if(date.getHours() > 11 && date.getHours() < 17){
         return "afternoon/"
-    }
-    if(date.getHours() > 16 && date.getHours() < 24){
+    } else if(date.getHours() > 16 && date.getHours() < 23){
         return "evening/"
-    }
-    if(date.getHours() > 23 && date.getHours() < 5){
+    } else {
         return "night/"
     }
 }
@@ -70,14 +114,25 @@ setBg()
 
 /*local storage START*/ 
 function setLocalStorage() {
-    localStorage.setItem('name', userame.value);
+    localStorage.setItem('name', userName.value);
+    localStorage.setItem('city', userCity.value);
 }
 window.addEventListener('beforeunload', setLocalStorage)
 
 function getLocalStorage() {
   if(localStorage.getItem('name')) {
-    userame.value = localStorage.getItem('name');
+    userName.value = localStorage.getItem('name');
   }
+
+  if(localStorage.getItem('city') == null || localStorage.getItem('city') == '') {
+    localStorage.setItem('city', `Minsk`);
+    getWeather();
+  } 
+
+  if(localStorage.getItem('city')) {
+    userCity.value = localStorage.getItem('city');
+  } 
+  getWeather()
 }
 window.addEventListener('load', getLocalStorage)
 /*local storage END*/ 
@@ -87,14 +142,11 @@ function showGreeting() {
     const date = new Date();
     if(date.getHours() > 4 && date.getHours() < 12){
         greeting.textContent = "Доброго утра,"
-    }
-    if(date.getHours() > 11 && date.getHours() < 17){
+    } else if (date.getHours() > 11 && date.getHours() < 17){
         greeting.textContent = "Доброго дня,"
-    }
-    if(date.getHours() > 16 && date.getHours() < 24){
+    } else if (date.getHours() > 16 && date.getHours() < 23){
         greeting.textContent = "Доброго вечера,"
-    }
-    if(date.getHours() > 23 && date.getHours() < 5){
+    } else {
         greeting.textContent = "Доброй ночи,"
     }
 }
