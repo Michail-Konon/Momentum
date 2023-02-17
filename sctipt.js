@@ -1,34 +1,55 @@
 // Weather API Key 98e20b6373849b7ff4b0fd01a78b1a87
 //https://api.openweathermap.org/data/2.5/weather?q=Минск&lang=ru&appid=98e20b6373849b7ff4b0fd01a78b1a87&units=metric
-const time = document.querySelector('.time'); // time
+const time = document.querySelector('.time');        // time
 const actualDate = document.querySelector('.date'); // date 
 
-const greeting = document.querySelector('.greeting'); // Greeting
-const userName = document.querySelector('.name'); // local storage
-const userCity = document.querySelector('.city'); // local storage
+const greeting = document.querySelector('.greeting');    // Greeting
+const userName = document.querySelector('.name');       // local storage
+const userCity = document.querySelector('.city');      // local storage
 const documentBody = document.querySelector('.body'); // slider
 
 const path = 'https://raw.githubusercontent.com/rolling-scopes-school/stage1-tasks/assets/images/';
 
-const nextSlide = document.querySelector('.slide-next');
-const previousSlide = document.querySelector('.slide-prev');
+const nextSlide = document.querySelector('.slide-next');      // slider
+const previousSlide = document.querySelector('.slide-prev'); // slider
 
-const weatherIcon = document.querySelector('.weather-icon');
-const temperature = document.querySelector('.temperature');
-const weatherDescription = document.querySelector('.weather-description');
-const errorMsg = document.querySelector('.weather-error')
-const wind = document.querySelector('.wind')
-const humidity = document.querySelector('.humidity')
+const weatherIcon = document.querySelector('.weather-icon');                 // weather
+const temperature = document.querySelector('.temperature');                 // weather
+const weatherDescription = document.querySelector('.weather-description'); // weather
+const errorMsg = document.querySelector('.weather-error')                 // weather
+const wind = document.querySelector('.wind')                             // weather
+const humidity = document.querySelector('.humidity')                    // weather
+
+const changeQuoteBtn = document.querySelector('.change-quote') // quotes
+const quoteContent = document.querySelector('.quote')         // quotes
+const autorContent = document.querySelector('.author')       // quotes
 
 let randNum = Math.floor(Math.random() * (20 - 1 + 1)) + 1;
 let language = 'ru'
 
+/*Quotes START*/
+
+changeQuoteBtn.addEventListener('click', () => {
+    getQuotes()
+})
+
+async function getQuotes() {  
+    let random = Math.floor(Math.random() * (14 - 1 + 1)) + 1;
+    const quotes = 'data.json';
+    const res = await fetch(quotes);
+    const data = await res.json(); 
+    quoteContent.textContent = data[random].text
+    autorContent.textContent = data[random].author
+  }
+  getQuotes();
+
+/*Quotes END*/
+
+/*Weather START*/
 userCity.addEventListener('change', () => {
     localStorage.setItem('city', userCity.value);
     getWeather();
 })
-
-/*Weather START*/
 
 let weatherArr = [temperature, weatherDescription, humidity, wind]
 
