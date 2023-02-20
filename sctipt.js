@@ -1,6 +1,9 @@
 import playList from './playList.js';
 console.log(playList);
-let arr;
+let arr; // audio player
+
+const volumeRange = document.querySelector('.volume');
+const muteBtn = document.querySelector('.unmute')
 
 const time = document.querySelector('.time');        // time
 const actualDate = document.querySelector('.date'); // date 
@@ -52,6 +55,7 @@ audio.onended = () => {
         audio.src = playList[playNum].src;
         audio.play();
         console.log('end and next should be first');
+        setMarq()
     } else {
         arr[playNum].classList.remove('play-item');
         playNum += 1;
@@ -59,16 +63,11 @@ audio.onended = () => {
         audio.src = playList[playNum].src;
         audio.play();
         console.log(`next is ${playNum}`);
+        setMarq()
     } 
 
 };
 
-// 1) сделать перелистывание << >> DONE
-// 2) формирование плейлиста через JS  
-// 3) добавление новых треков
-// 4) cделать шкалу прогресса через ползунок, с ежесекундным обновлением
-// 5) На него ухо и функцию, которая переводит длительность в проценты или как то так
-// 6) сделать бегущую строку как в AIMP
 controlPrev.addEventListener('click', () => {
     if(isPlayed == true) {
         isPlayed = false;
@@ -95,20 +94,24 @@ function nextTrack(direct) {
         arr[playNum].classList.remove('play-item');
         playNum = 0;
         audio.src = playList[playNum].src;
+        setMarq();
     } else if(playNum == 0 && direct == '-1') {
         arr[playNum].classList.remove('play-item');
         playNum = (playList.length - 1);
         audio.src = playList[playNum].src;
+        setMarq();
     } else {
         arr[playNum].classList.remove('play-item');
         playNum += Number(direct);
         audio.src = playList[playNum].src;
+        setMarq();
     } 
 }
 
 controlPlay.addEventListener('click', () => {
     audioPlayer();
     controlPlay.classList.toggle('pause');
+    setMarq();
 })
 
 controlStop.addEventListener('click', () => {
@@ -142,6 +145,7 @@ function createPlayList() {
                 isPlayed = false;
                 controlPlay.classList.toggle('pause');
                 console.log(`same , index = ${playList[playNum].title} and current = ${playList[i].title} ${isPlayed}`);
+                setMarq();
             } else if(isPlayed == true && playList[playNum].title != playList[i].title) {
                 liArr.forEach((el) => {
                     el.classList.remove('play-item');
@@ -151,6 +155,7 @@ function createPlayList() {
                 audio.play();
                 playNum = i;
                 console.log(`different, index = ${playList[playNum].title} and current = ${playList[i].title} ${isPlayed}`);
+                setMarq();
             } else {
                 isPlayed = true;
                 audio.src = playList[i].src;
@@ -159,6 +164,7 @@ function createPlayList() {
                 li.classList.toggle('play-item');
                 playNum = i;
                 console.log(`false, index = ${playList[playNum].title} and current = ${playList[i].title} ${isPlayed}`);
+                setMarq();
             }
         });
         liArr.push(li);
@@ -178,7 +184,52 @@ function audioPlayer() {
         arr[playNum].classList.toggle('play-item');
     }
 }
+
+const marquee = document.querySelector('.player-current_track')
+function setMarq() {
+    marquee.textContent = playList[playNum].title
+}
+
 /*Audio Player END*/
+
+/*Advance Player START*/
+// 3) добавление новых треков
+// 4) cделать шкалу прогресса через ползунок, с ежесекундным обновлением
+// 5) На него ухо и функцию, которая переводит длительность в проценты или как то так
+let volume = 1;
+volumeRange.addEventListener('change', () => {
+    console.log(`${volumeRange.value}`);
+    if(volumeRange.value == 0) {
+        audio.volume = volumeRange.value / 100;
+        muteBtn.classList.add('mute');
+        console.log(volume)
+    } else {
+        audio.volume = volumeRange.value / 100;
+        volume = audio.volume;
+        muteBtn.classList.remove('mute');
+    }
+})
+
+muteBtn.addEventListener('click', () => {
+    if(audio.volume == 0) {
+        muteBtn.classList.remove('mute');
+        audio.volume = volume;
+        volumeRange.value = volume * 100;
+        console.log('un')
+    } else {
+        muteBtn.classList.add('mute');
+        audio.volume = 0;
+        volumeRange.value = 0;
+        console.log('unmute')
+    }
+    
+})
+
+
+
+
+
+/*Advance Player END*/
 
 /*Quotes START*/
 
