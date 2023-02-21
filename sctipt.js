@@ -2,6 +2,10 @@ import playList from './playList.js';
 console.log(playList);
 let arr; // audio player
 
+const timeCurrent = document.querySelector('.time-current');
+const timeTotal = document.querySelector('.time-total');
+const progressBar = document.querySelector('.progress-bar');
+
 const volumeRange = document.querySelector('.volume');
 const muteBtn = document.querySelector('.unmute')
 
@@ -26,15 +30,15 @@ const errorMsg = document.querySelector('.weather-error')                 // wea
 const wind = document.querySelector('.wind')                             // weather
 const humidity = document.querySelector('.humidity')                    // weather
 
-const changeQuoteBtn = document.querySelector('.change-quote')  // quotes
-const quoteContent = document.querySelector('.quote')          // quotes
-const autorContent = document.querySelector('.author')        // quotes
+const changeQuoteBtn = document.querySelector('.change-quote')        // quotes
+const quoteContent = document.querySelector('.quote')                // quotes
+const autorContent = document.querySelector('.author')              // quotes
 
-const controlStop = document.querySelector('.stop')          // audio player
-const controlPlay = document.querySelector('.play')         // audio player
-const controlPrev = document.querySelector('.play-prev')   // audio player
-const controlNext = document.querySelector('.play-next')  // audio player
-const playlistContainer = document.querySelector('.play-list')    // audio player
+const controlStop = document.querySelector('.stop')                // audio player
+const controlPlay = document.querySelector('.play')               // audio player
+const controlPrev = document.querySelector('.play-prev')         // audio player
+const controlNext = document.querySelector('.play-next')        // audio player
+const playlistContainer = document.querySelector('.play-list') // audio player
 
 
 let randNum = Math.floor(Math.random() * (20 - 1 + 1)) + 1;
@@ -46,26 +50,49 @@ let playNum = 0;
 
 const audio = new Audio();
 audio.src = playList[playNum].src;
+let duration;
+audio.addEventListener("loadeddata", () => { // КЛЮЧ К СПАСЕНИЮ НАЙДЕН
+    duration = audio.duration;
+    let friendly = (duration - (duration % 60)) / 60
+    console.log(`${friendly}:${Math.floor(duration % 60)}`)
+});
+
+audio.addEventListener('timeupdate', () => {
+    let pattern = String(Math.floor(audio.currentTime / 60)) + ':'+ String(Math.floor(audio.currentTime % 60))
+    timeCurrent.textContent = pattern;
+    progressBar.value = ((audio.currentTime) / (duration / 100));
+    console.log(audio.currentTime)
+}) 
+
+progressBar.addEventListener('input', ()=> {
+    audio.currentTime =(( progressBar.value) * (duration / 100));
+})
+
+progressBar.addEventListener('mousedown', ()=> {
+    if(isPlayed == true) {
+        audio.pause();
+    }
+})
+
+progressBar.addEventListener('mouseup', ()=> {
+    if(isPlayed == true) {
+        audio.play();
+    }
+})
 
 audio.onended = () => {
+    arr[playNum].classList.remove('play-item');
     if(playNum == (playList.length - 1)) {
-        arr[playNum].classList.remove('play-item');
         playNum = 0
-        arr[playNum].classList.add('play-item');
-        audio.src = playList[playNum].src;
-        audio.play();
-        console.log('end and next should be first');
-        setMarq()
     } else {
-        arr[playNum].classList.remove('play-item');
         playNum += 1;
-        arr[playNum].classList.add('play-item');
-        audio.src = playList[playNum].src;
-        audio.play();
-        console.log(`next is ${playNum}`);
-        setMarq()
     } 
-
+    arr[playNum].classList.add('play-item');
+    audio.src = playList[playNum].src;
+    getTrackTime();
+    audio.play();
+    console.log('identical work');
+    setMarq()
 };
 
 controlPrev.addEventListener('click', () => {
@@ -78,6 +105,7 @@ controlPrev.addEventListener('click', () => {
     }
     console.log(playNum);
 })
+
 controlNext.addEventListener('click', () => {
     if(isPlayed == true) {
         isPlayed = false;
@@ -90,22 +118,17 @@ controlNext.addEventListener('click', () => {
 })
 
 function nextTrack(direct) {
+    arr[playNum].classList.remove('play-item');
     if(playNum == (playList.length - 1) && direct == '1') {  
-        arr[playNum].classList.remove('play-item');
         playNum = 0;
-        audio.src = playList[playNum].src;
-        setMarq();
     } else if(playNum == 0 && direct == '-1') {
-        arr[playNum].classList.remove('play-item');
         playNum = (playList.length - 1);
-        audio.src = playList[playNum].src;
-        setMarq();
     } else {
-        arr[playNum].classList.remove('play-item');
         playNum += Number(direct);
-        audio.src = playList[playNum].src;
-        setMarq();
     } 
+    audio.src = playList[playNum].src;
+    setMarq();
+    getTrackTime();
 }
 
 controlPlay.addEventListener('click', () => {
@@ -128,8 +151,6 @@ controlStop.addEventListener('click', () => {
     }
 })
 
-
-
 function createPlayList() {
     let liArr = [];
     playList.forEach((el, i) => {
@@ -137,7 +158,6 @@ function createPlayList() {
         li.textContent = `${i + 1}) ${playList[i].title}`;
         li.classList.add('player-item');
         playlistContainer.appendChild(li);
-
         li.addEventListener('click', ()=> {
              if(li.classList.contains('play-item')) { 
                 audio.src = playList[i].src;
@@ -166,9 +186,11 @@ function createPlayList() {
                 console.log(`false, index = ${playList[playNum].title} and current = ${playList[i].title} ${isPlayed}`);
                 setMarq();
             }
+            getTrackTime();
         });
         liArr.push(li);
     });
+    getTrackTime()
     return arr = liArr
 }
 window.addEventListener('load', createPlayList)
@@ -178,11 +200,14 @@ function audioPlayer() {
         audio.play();
         isPlayed = true
         arr[playNum].classList.toggle('play-item');
+        console.log(audio.duration)
     } else {
         audio.pause()
         isPlayed = false
         arr[playNum].classList.toggle('play-item');
+        console.log(audio.duration)
     }
+    getTrackTime();
 }
 
 const marquee = document.querySelector('.player-current_track')
@@ -192,10 +217,10 @@ function setMarq() {
 
 /*Audio Player END*/
 
-/*Advance Player START*/
-// 3) добавление новых треков
-// 4) cделать шкалу прогресса через ползунок, с ежесекундным обновлением
-// 5) На него ухо и функцию, которая переводит длительность в проценты или как то так
+/*Advance Player START (progress bar + volume control)*/
+// 3) прогресс-бар в котором отображается прогресс проигрывания
+// 4) при перемещении ползунка прогресс-бара меняется текущее время воспроизведения трека
+// 5) отображается текущее и общее время воспроизведения трека
 let volume = 1;
 volumeRange.addEventListener('change', () => {
     console.log(`${volumeRange.value}`);
@@ -222,13 +247,19 @@ muteBtn.addEventListener('click', () => {
         volumeRange.value = 0;
         console.log('unmute')
     }
-    
 })
 
+function getTrackTime() {
+    timeTotal.textContent = `/${playList[playNum].duration}`
+}
 
-
-
-
+function getCurrentTime() {
+    if(isPlayed == true) {
+        let pattern = String(audio.currentTime / 60) + ':'+ String(audio.currentTime % 60)
+        timeCurrent.textContent = pattern
+        setTimeout(getCurrentTime(), 1000);
+    } else {}
+}
 /*Advance Player END*/
 
 /*Quotes START*/
@@ -262,18 +293,16 @@ async function getWeather() {
     const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&lang=${language}&appid=${API_KEY}&units=metric`
     const res = await fetch(url);
     const data = await res.json(); 
+    weatherIcon.className = 'weather-icon owf';
     if( data.cod == "404") {
         console.log('Error caught!')
-        weatherIcon.className = 'weather-icon owf';
         weatherArr.forEach((el) => el.textContent = '')
         errorMsg.textContent = data.message;
     } else if(data.cod == "400") {
         console.log('Error caught!')
-        weatherIcon.className = 'weather-icon owf';
         errorMsg.textContent = 'Enter City name';
         weatherArr.forEach((el) => el.textContent = '')
     } else {
-        weatherIcon.className = 'weather-icon owf';
         weatherIcon.classList.add(`owf-${data.weather[0].id}`);
         temperature.textContent = `${Math.round(data.main.temp)}°C`;
         weatherDescription.textContent = data.weather[0].description;

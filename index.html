@@ -25,7 +25,13 @@
           <input class="volume" type="range" name="sound" min="0" max="100" value="100" step="1">
         </div>
       </div>
-      <div class="player-progress_bar"></div>
+      <div class="progress_bar-wrapper">
+        <input class="progress-bar" type="range" name="progress" min="0" max="100" value="0" step="0.1">
+        <div class="progress-time">
+          <div class="time-current"></div>
+          <div class="time-total"></div>
+        </div>
+      </div>
       <ul class="play-list"></ul>
     </div>
     <div class="weather">
