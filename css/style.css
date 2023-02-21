@@ -412,6 +412,30 @@ input[type=range].progress-bar::-webkit-slider-thumb {
   min-height: 20px;
 }
 
+.lang {
+  display: flex;
+  overflow: hidden;
+  height: 19px;
+  transition: 0.3s;
+  background-color: #e6e6e6;
+  color: #000000;
+  cursor: pointer;
+}
+
+.lang.open {
+  height: 51px;
+  transition: 0.3s;
+}
+
+.lang-wrapper {
+  flex-direction: column;
+}
+
+.lang-main {
+  width: 24px;
+  height: 18px;
+}
+
 @media (max-width: 768px) {
   .time {
     min-height: 80px;

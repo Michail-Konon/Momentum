@@ -2,6 +2,11 @@ import playList from './playList.js';
 console.log(playList);
 let arr; // audio player
 
+const langMain = document.querySelector('.lang-main');
+const langControl = document.querySelector('.lang');
+const langRu = document.querySelector('.ru');
+const langEn = document.querySelector('.en')
+
 const timeCurrent = document.querySelector('.time-current');
 const timeTotal = document.querySelector('.time-total');
 const progressBar = document.querySelector('.progress-bar');
@@ -42,7 +47,7 @@ const playlistContainer = document.querySelector('.play-list') // audio player
 
 
 let randNum = Math.floor(Math.random() * (20 - 1 + 1)) + 1;
-let language = 'ru'
+let language = localStorage.getItem('lang')
 let isPlayed = false;
 let playNum = 0;
 
@@ -218,9 +223,7 @@ function setMarq() {
 /*Audio Player END*/
 
 /*Advance Player START (progress bar + volume control)*/
-// 3) прогресс-бар в котором отображается прогресс проигрывания
-// 4) при перемещении ползунка прогресс-бара меняется текущее время воспроизведения трека
-// 5) отображается текущее и общее время воспроизведения трека
+
 let volume = 1;
 volumeRange.addEventListener('change', () => {
     console.log(`${volumeRange.value}`);
@@ -253,13 +256,6 @@ function getTrackTime() {
     timeTotal.textContent = `/${playList[playNum].duration}`
 }
 
-function getCurrentTime() {
-    if(isPlayed == true) {
-        let pattern = String(audio.currentTime / 60) + ':'+ String(audio.currentTime % 60)
-        timeCurrent.textContent = pattern
-        setTimeout(getCurrentTime(), 1000);
-    } else {}
-}
 /*Advance Player END*/
 
 /*Quotes START*/
@@ -300,23 +296,30 @@ async function getWeather() {
         errorMsg.textContent = data.message;
     } else if(data.cod == "400") {
         console.log('Error caught!')
-        errorMsg.textContent = 'Enter City name';
+        if(language == 'ru') {
+            errorMsg.textContent = 'Ведите название города';
+        } else {
+            errorMsg.textContent = 'Enter City name';
+        }
         weatherArr.forEach((el) => el.textContent = '')
     } else {
         weatherIcon.classList.add(`owf-${data.weather[0].id}`);
         temperature.textContent = `${Math.round(data.main.temp)}°C`;
         weatherDescription.textContent = data.weather[0].description;
-        humidity.textContent = `Влажность: ${data.main.humidity} %`
-        wind.textContent = `Ветер: ${Math.round(data.wind.speed)} м/с`;
+        if(language == 'ru'){
+            humidity.textContent = `Влажность: ${data.main.humidity} %`
+            wind.textContent = `Ветер: ${Math.round(data.wind.speed)} км/ч`;
+        } else {
+            humidity.textContent = `Humidity: ${data.main.humidity} %`
+            wind.textContent = `Wind: ${Math.round(data.wind.speed)} km/h`;
+        }
         errorMsg.textContent = '';
     }
 }   
 
-
 /*Weather END*/
 
 /*Slider START*/ 
-
 nextSlide.addEventListener('click', () => {
     slideMoving('1');
     console.log(randNum)
@@ -378,8 +381,21 @@ function getLocalStorage() {
     userName.value = localStorage.getItem('name');
   }
 
+  if(localStorage.getItem('lang') == null || localStorage.getItem('lang') == '') {
+    localStorage.setItem('lang', 'ru');
+    langMain.textContent = localStorage.getItem('lang').toUpperCase();
+    changeLang(localStorage.getItem('lang'));
+  } else {
+    langMain.textContent = localStorage.getItem('lang').toUpperCase();
+    changeLang(localStorage.getItem('lang'));
+  }
+
   if(localStorage.getItem('city') == null || localStorage.getItem('city') == '') {
-    localStorage.setItem('city', `Minsk`);
+    if(language == 'ru') {
+        localStorage.setItem('city', `Минск`);
+    } else {
+        localStorage.setItem('city', `Minsk`);
+    }
     getWeather();
   } 
 
@@ -394,15 +410,28 @@ window.addEventListener('load', getLocalStorage)
 /*Greeting sequence START*/ 
 function showGreeting() {
     const date = new Date();
-    if(date.getHours() > 4 && date.getHours() < 12){
-        greeting.textContent = "Доброго утра,"
-    } else if (date.getHours() > 11 && date.getHours() < 17){
-        greeting.textContent = "Доброго дня,"
-    } else if (date.getHours() > 16 && date.getHours() < 23){
-        greeting.textContent = "Доброго вечера,"
+    if(language == 'ru') {
+        if(date.getHours() > 4 && date.getHours() < 12){
+            greeting.textContent = "Доброго утра,"
+        } else if (date.getHours() > 11 && date.getHours() < 17){
+            greeting.textContent = "Доброго дня,"
+        } else if (date.getHours() > 16 && date.getHours() < 23){
+            greeting.textContent = "Доброго вечера,"
+        } else {
+            greeting.textContent = "Доброй ночи,"
+        }
     } else {
-        greeting.textContent = "Доброй ночи,"
+        if(date.getHours() > 4 && date.getHours() < 12){
+            greeting.textContent = "Good morning,"
+        } else if (date.getHours() > 11 && date.getHours() < 17){
+            greeting.textContent = "Good day,"
+        } else if (date.getHours() > 16 && date.getHours() < 23){
+            greeting.textContent = "Good evening,"
+        } else {
+            greeting.textContent = "Good night,"
+        }
     }
+    
 }
 showGreeting()
 /*Greeting sequence END*/ 
@@ -412,8 +441,13 @@ showGreeting()
 function showDate() {
     const date = new Date();
     const options = {weekday: 'long', day: 'numeric', month: 'long',  timeZone: 'UTC'};
-    const currentDate = date.toLocaleDateString('ru-Ru', options);
-    actualDate.textContent = currentDate;
+    if(language == 'ru') {
+        const currentDate = date.toLocaleDateString('ru-Ru', options);
+        actualDate.textContent = currentDate;
+    } else {
+        const currentDate = date.toLocaleDateString('en-Gb', options);
+        actualDate.textContent = currentDate;
+    }
     setTimeout(showDate,1000)
 }
 showDate();
@@ -426,7 +460,52 @@ function showTime() {
     const currentTime = date.toLocaleTimeString();
     time.textContent = currentTime;
     setTimeout(showTime,1000)
-  }
-  showTime();
+}
+showTime();
+/*Time END*/ 
+  
+/*lang func START*/
+function placeHolderLang() {
+    if(language == 'ru') {
+        document.getElementsByName('holder')[0].placeholder='[Введите имя]';
+    } else {
+        document.getElementsByName('holder')[0].placeholder='[Enter your name]';
+    }
+}
+placeHolderLang()
 
-  /*Time END*/ 
+
+langControl.addEventListener('click', () => {
+    langControl.classList.toggle('open')
+})
+
+langRu.addEventListener('click', () => {
+    langMain.textContent = 'RU'
+    changeLang('ru')
+})
+
+langEn.addEventListener('click', () => {
+    langMain.textContent = 'EN'
+    changeLang('en')
+})
+
+function changeLang(lang) {
+    language = lang;
+    localStorage.setItem('lang', `${lang}`);
+    placeHolderLang();
+    showGreeting();
+    getWeather();
+    setLnagStorage(lang);
+}
+
+function setLnagStorage(lang) {
+    localStorage.setItem('city', ``);
+    if(lang == 'ru') {
+        userCity.value = 'Минск';
+        localStorage.setItem('city', `Минск`);
+    } else {
+        userCity.value = 'Minsk';
+        localStorage.setItem('city', `Minsk`);
+    }
+}
+/*lang func START*/
