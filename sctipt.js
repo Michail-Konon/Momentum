@@ -1,5 +1,4 @@
 import playList from './playList.js';
-console.log(playList);
 let arr; // audio player
 
 const langMain = document.querySelector('.lang-main'); // language settings
@@ -87,11 +86,10 @@ let isPlayed = false;
 let playNum = 0;
 
 /*Audio Player START*/    
-
 const audio = new Audio();
 audio.src = playList[playNum].src;
 let duration;
-audio.addEventListener("loadeddata", () => { // КЛЮЧ К СПАСЕНИЮ НАЙДЕН
+audio.addEventListener("loadeddata", () => {
     duration = audio.duration;
     let friendly = (duration - (duration % 60)) / 60
     console.log(`${friendly}:${Math.floor(duration % 60)}`)
@@ -131,7 +129,6 @@ audio.onended = () => {
     audio.src = playList[playNum].src;
     getTrackTime();
     audio.play();
-    console.log('identical work');
     setMarq()
 };
 
@@ -237,7 +234,6 @@ function audioPlayer() {
         isPlayed = false
     }
     arr[playNum].classList.toggle('play-item');
-    console.log(audio.duration)
     getTrackTime();
 }
 
@@ -252,7 +248,6 @@ function setMarq() {
 
 let volume = 1;
 volumeRange.addEventListener('change', () => {
-    console.log(`${volumeRange.value}`);
     if(volumeRange.value == 0) {
         audio.volume = volumeRange.value / 100;
         muteBtn.classList.add('mute');
@@ -269,12 +264,10 @@ muteBtn.addEventListener('click', () => {
         muteBtn.classList.remove('mute');
         audio.volume = volume;
         volumeRange.value = volume * 100;
-        console.log('un')
     } else {
         muteBtn.classList.add('mute');
         audio.volume = 0;
         volumeRange.value = 0;
-        console.log('unmute')
     }
 })
 
@@ -285,7 +278,6 @@ function getTrackTime() {
 /*Advance Player END*/
 
 /*Quotes START*/
-
 changeQuoteBtn.addEventListener('click', () => {
     getQuotes()
 })
@@ -304,7 +296,6 @@ async function getQuotes() {
     autorContent.textContent = data[random].author
   }
   getQuotes();
-
 /*Quotes END*/
 
 /*Weather START*/
@@ -347,7 +338,6 @@ async function getWeather() {
         errorMsg.textContent = '';
     }
 }   
-
 /*Weather END*/
 
 /*Slider START*/ 
@@ -461,7 +451,6 @@ function getLocalStorage() {
     }
     
   }
-  
 
   if(localStorage.getItem('city') == null || localStorage.getItem('city') == '') {
     if(language == 'ru') {
@@ -475,7 +464,7 @@ function getLocalStorage() {
   if(localStorage.getItem('city')) {
     userCity.value = localStorage.getItem('city');
   } 
-//hiding options
+
   if(localStorage.getItem('isWeatherHide') == null || localStorage.getItem('isWeatherHide') == '') {
     localStorage.setItem('isWeatherHide', 'false');
   }
@@ -496,7 +485,7 @@ function getLocalStorage() {
   }
   getWeather();
 }
-window.addEventListener('load', getLocalStorage) ////////////////////////////////////////////////////////
+window.addEventListener('load', getLocalStorage)
 /*local storage END*/ 
 
 /*Greeting sequence START*/ 
@@ -528,7 +517,6 @@ function showGreeting() {
 showGreeting()
 /*Greeting sequence END*/ 
 
-
 /*Date START*/ 
 function showDate() {
     const date = new Date();
@@ -544,7 +532,6 @@ function showDate() {
 }
 showDate();
 /*Date END*/
-
 
 /*Time START*/ 
 function showTime() {
@@ -565,7 +552,6 @@ function placeHolderLang() {
     }
 }
 placeHolderLang()
-
 
 langControl.addEventListener('click', () => {
     langControl.classList.toggle('open')
@@ -674,13 +660,11 @@ function changeLangTag(value) {
     console.log(result)
     return result
 }
-
 /*lang func END*/
 
 /*API img func START*/
 const FLIKR_KEY = 'd6c7a5956282ffb214b0bc95cc8e43d5';
 const UNSPLASH_KEY = 'v24yI7eSpsnACDdfGhvqlOoRAjUKuK6GijDEVUxZ80Q';
-//let apiUrl = `https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=${FLIKR_KEY}&tags=nature&extras=url_l&format=json&nojsoncallback=1`
 
 imgControl.addEventListener('click', () => {
     imgControl.classList.toggle('open')
@@ -735,11 +719,9 @@ async function getUnsplLinkToImage() {
         documentBody.style.backgroundImage = `url(${img.src})`;
     };
 }
-
 /*API img func END*/
 
 /*Settings Start*/
-
 const cogBtn = document.querySelector('.cog');
 const settingsMenu = document.querySelector('.settings-wrapper');
 
@@ -894,8 +876,6 @@ function changeLangHide() {
         hideTime.textContent = 'time'
     }
 }
-
-
 
 /*Settings END*/
 
