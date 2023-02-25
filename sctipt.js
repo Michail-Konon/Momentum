@@ -20,6 +20,7 @@ const hideDate = document.querySelector('.hideDate');          // hiding setting
 const hidePlayer = document.querySelector('.hidePlayer');     // hiding settings
 const hideQuote = document.querySelector('.hideQuotes');     // hiding settings
 const hideGreet = document.querySelector('.hideGreetings'); // hiding settings
+const hideLinks = document.querySelector('.hideLinks');    // hiding settings
 
 const blockWeather = document.querySelector('.weather');
 const blockPlayer = document.querySelector('.player');
@@ -27,6 +28,7 @@ const blockDate = document.querySelector('.date');
 const blockTime = document.querySelector('.time');
 const blockGreet = document.querySelector('.greeting-container');
 const blockQuote = document.querySelector('.quote-wrapper');
+const blockLinks = document.querySelector('.links');
 
 const tagMain = document.querySelector('.tag-main');          // tag settings
 const tagDay = document.querySelector('.daytime-tag');       // tag settings
@@ -73,12 +75,13 @@ const controlPrev = document.querySelector('.play-prev')         // audio player
 const controlNext = document.querySelector('.play-next')        // audio player
 const playlistContainer = document.querySelector('.play-list') // audio player
 
-let isWeatherHide = false;   // hindng flags
-let isDateHide = false;     // hindng flags
-let isGreetHide = false;   // hindng flags
-let isQuoteHide = false   // hindng flags
-let isPlayerHide = false // hindng flags
-let isTimeHide = false  // hindng flags
+let isWeatherHide = false;    // hindng flags
+let isDateHide = false;      // hindng flags
+let isGreetHide = false;    // hindng flags
+let isQuoteHide = false    // hindng flags
+let isPlayerHide = false  // hindng flags
+let isTimeHide = false   // hindng flags
+let isLinksHide = false // hindng flags
 
 let randNum = Math.floor(Math.random() * (20 - 1 + 1)) + 1;
 let language = localStorage.getItem('lang')
@@ -483,7 +486,11 @@ function getLocalStorage() {
   if(localStorage.getItem('isTimeHide') == null || localStorage.getItem('isTimeHide') == '') {
     localStorage.setItem('isTimeHide', 'false');
   }
+  if(localStorage.getItem('isLinksHide') == null || localStorage.getItem('isLinksHide') == '') {
+    localStorage.setItem('isLinksHide', 'false');
+  }
   getWeather();
+  getLinksfromStorage()
 }
 window.addEventListener('load', getLocalStorage)
 /*local storage END*/ 
@@ -594,6 +601,7 @@ function changeLang(lang) {
     changeTagOptions();
     changeTagMain();
     changeLangHide();
+    linkTranslate();
 }
 
 function setLnagStorage(lang) {
@@ -830,6 +838,11 @@ hideTime.addEventListener('click', () => {
     blockTime.classList.toggle('timeToHide');
 })
 
+hideLinks.addEventListener('click', () => {
+    hideOptionsSave(blockLinks, 'isLinksHide');
+    blockLinks.classList.toggle('timeToHide');
+})
+
 function loadHideState() { 
     if(localStorage.getItem('isWeatherHide') == 'true') {
         blockWeather.classList.add('timeToHide');
@@ -849,6 +862,9 @@ function loadHideState() {
     if(localStorage.getItem('isTimeHide') == 'true') {
         blockTime.classList.toggle('timeToHide');
     }
+    if(localStorage.getItem('isLinksHide') == 'true') {
+        blockLinks.classList.toggle('timeToHide');
+    }
 }
 
 function hideOptionsSave(block, flag) {
@@ -867,6 +883,7 @@ function changeLangHide() {
         hideQuote.textContent = 'цитаты'
         hidePlayer.textContent = 'плеер'
         hideTime.textContent = 'время'
+        hideLinks.textContent = 'ссылки'
     } else if (localStorage.getItem('lang') == 'en') {
         hideWeather.textContent = 'weather'
         hideDate.textContent = 'data'
@@ -874,9 +891,128 @@ function changeLangHide() {
         hideQuote.textContent = 'quotes'
         hidePlayer.textContent = 'player'
         hideTime.textContent = 'time'
+        hideLinks.textContent = 'links'
     }
 }
 
 /*Settings END*/
 
-// доп фунционал будет скорее всего список ссылок(закладки)
+/*Links START*/
+
+const linksMain = document.querySelector('.links-main');
+const linksList = document.querySelector('.links-wrapper');
+const linksAddBtn = document.querySelector('.links-addBtn');
+const modalWindow = document.querySelector('.modal');
+const linksContainer = document.querySelector('.links-container')
+
+const inputTitle = document.getElementsByName('input-title');
+const inputUrl = document.getElementsByName('input-url')
+
+const bntConfirm = document.querySelector('.confirm-btn');
+const bntCancel = document.querySelector('.cancel-btn');
+
+let linksArr = [];
+
+bntConfirm.addEventListener('click', () => {
+    addLink();
+    inputTitle[0].value = ''
+    inputUrl[0].value = ''
+})
+
+bntCancel.addEventListener('click', () => {
+    cancelLink()
+    modalWindow.classList.remove('opened')
+})
+
+linksMain.addEventListener('click', () => {
+    linksList.classList.toggle('opened');
+    modalClose()
+})
+
+linksAddBtn.addEventListener('click', () => {
+    modalWindow.classList.toggle('opened');
+})
+
+function modalClose() {
+    modalWindow.classList.remove('opened');
+}
+
+function addLink() {
+    let title = inputTitle[0].value;
+    let url = inputUrl[0].value;
+    const newDiv = document.createElement('div');
+    const newA = document.createElement('a');
+    const newI = document.createElement('i');
+    newDiv.classList.add('link-item');
+    newA.classList.add('link-item-title');
+    newA.textContent = `${title}`;
+    newA.target = "_blank"
+    newA.href = `${url}`;
+    newI.classList.add('link-item-close');
+    newI.textContent = 'X';
+    newDiv.appendChild(newA);
+    newDiv.appendChild(newI);
+    linksContainer.appendChild(newDiv);
+    newI.addEventListener('click', () => {
+        linksContainer.removeChild(newDiv);
+        const index = linksArr.indexOf(newDiv) - 1;
+        linksArr.splice(index, 1);
+        setLinksToStorage();
+    });
+    let obj = {
+        title: `${title}`,
+        url: `${url}`
+    }
+    linksArr.push(obj);
+    setLinksToStorage()
+}
+
+function cancelLink() {
+    inputTitle[0].value = ''
+    inputUrl[0].value = ''
+}
+
+function linkTranslate() {
+    if(localStorage.getItem('lang') == 'ru') {
+        inputTitle[0].placeholder = 'Название';
+        bntCancel.textContent = 'отмена';
+        bntConfirm.textContent = 'ок';
+        linksMain.textContent = 'Ссылки'
+    } else {
+        inputTitle[0].placeholder = 'Title';
+        bntCancel.textContent = 'cancel';
+        bntConfirm.textContent = 'ok';
+        linksMain.textContent = 'Here are the Links'
+    }
+}
+
+function setLinksToStorage() {
+    let toSave = JSON.stringify(linksArr)
+    localStorage.setItem("links", toSave);
+}
+
+function getLinksfromStorage() {
+    if(localStorage.getItem("links") == null || localStorage.getItem("links") == '' || localStorage.getItem("links") == []) {  
+    } else {
+    let storedLinks = JSON.parse(localStorage.getItem("links"));
+    storedLinks.forEach((el) => {
+        let div = document.createElement('div');
+        div.classList.add('link-item');
+        div.innerHTML = `
+          <a class="link-item-title" target="_blank" href="${el.url}">${el.title}</a>`
+        linksContainer.appendChild(div);
+        const newI = document.createElement('i');
+        newI.classList.add('link-item-close');
+        newI.textContent = 'X';
+        newI.addEventListener('click', () => {
+            linksContainer.removeChild(div);
+            const index = linksArr.indexOf(div) - 1;
+            linksArr.splice(index, 1);
+            setLinksToStorage();
+        });
+        div.appendChild(newI);
+    })
+    }
+}
+
+/*Links END*/

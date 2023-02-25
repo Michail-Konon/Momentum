@@ -116,6 +116,12 @@ input[type=range].volume::-webkit-slider-thumb {
   transition: 0.5s;
 }
 
+.links.timeToHide {
+  height: 0px;
+  width: 0px;
+  transition: 0.5s;
+}
+
 .weather.timeToHide {
   height: 0px;
   width: 0px;
@@ -540,6 +546,7 @@ input[type=range].progress-bar::-webkit-slider-thumb {
 }
 
 .footer {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -548,6 +555,131 @@ input[type=range].progress-bar::-webkit-slider-thumb {
   height: 30vh;
   min-height: 160px;  
   padding: 20px;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+.links {
+  width: 140px;
+  height: 20px;
+  display: flex;
+  flex-direction: row;
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  gap: 5px;
+  align-items: center;
+  transition: 0.5s;
+}
+
+.links-wrapper {
+  width: 140px;
+  height: 20px;
+  background-color: #4e4e4e;
+  opacity: 0.8;
+  border: 2px solid white;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+  transition: 0.5s;
+}
+
+.links-wrapper.opened {
+  width: 200px;
+  height: 150px;
+  opacity: 0.8;
+  transition: 0.5s;
+}
+
+.links-addBtn {
+  border: 1px solid white;
+  border-radius: 19px;
+  padding: 2px 6px;
+  cursor: pointer;
+  transition: 0.5s;
+}
+
+.links-addBtn:hover {
+  transition: 0.5s;
+  transform: rotateZ(180deg);
+  opacity: 1;
+  background-color: #000000;
+}
+
+.links-container {
+  height: 100px;
+  overflow: scroll;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  width: 200px;
+}
+
+.linksbtn {
+  border-radius: 11px;
+  padding: 2px;
+}
+
+.link-item {
+  display: flex;
+  flex-direction: row;
+  background-color: gray;
+  border-radius: 15px;
+  border: 1px solid white;
+}
+
+.link-item-title {
+  width: 165px;
+}
+
+.link-item-close {
+  border: 1px solid white;
+  border-radius: 15px;
+  padding: 0px 4px;
+  background-color: gray;
+  transition: 0.5s;
+  cursor: pointer;
+  user-select: none;
+}
+
+.link-item-close:hover {
+  background-color: rgb(0, 0, 0);
+  transition: 0.5s;
+}
+
+
+.modal {
+  width: 0px;
+  height: 0px;
+  padding: 0px;
+  background-color: #4e4e4e;
+  transition: 0.5s;
+  overflow: hidden;
+  opacity: 0.8;
+  border-radius: 5px;
+  
+}
+
+.modal.opened {
+  transition: 0.5s;
+  overflow: hidden;
+  border: none;
+  width: 220px;
+  height: 110px;
+  padding: 20px;
+  border: 2px solid white;
+}
+
+.modal-wrapper {
+
+}
+
+.modal-inputs{
+  border-radius: 5px;
+  margin: 2px;
 }
 
 .change-quote {
