@@ -250,7 +250,7 @@ function setMarq() {
 /*Advance Player START (progress bar + volume control)*/
 
 let volume = 1;
-volumeRange.addEventListener('change', () => {
+volumeRange.addEventListener('input', () => {
     if(volumeRange.value == 0) {
         audio.volume = volumeRange.value / 100;
         muteBtn.classList.add('mute');
