@@ -152,6 +152,12 @@ input[type=range].volume::-webkit-slider-thumb {
   transition: 0.2s;
 }
 
+.links-wrapper.timeToHide {
+  height: 0px;
+  width: 0px;
+  transition: 0.2s;
+}
+
 .quote-wrapper {
   height: 200px;
   width: 500px;
@@ -562,8 +568,7 @@ input[type=range].progress-bar::-webkit-slider-thumb {
 }
 
 .links {
-  width: 140px;
-  height: 20px;
+
   display: flex;
   flex-direction: row;
   position: absolute;
