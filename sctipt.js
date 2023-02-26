@@ -839,7 +839,7 @@ hideTime.addEventListener('click', () => {
 })
 
 hideLinks.addEventListener('click', () => {
-    hideOptionsSave(blockLinks, 'isLinksHide');
+    hideOptionsSave(linksList, 'isLinksHide');
     linksList.classList.toggle('timeToHide');
 })
 
