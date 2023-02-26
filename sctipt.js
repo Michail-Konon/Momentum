@@ -839,8 +839,8 @@ hideTime.addEventListener('click', () => {
 })
 
 hideLinks.addEventListener('click', () => {
-    hideOptionsSave(blockLinks, 'isLinksHide');
-    blockLinks.classList.toggle('timeToHide');
+    hideOptionsSave(linksList, 'isLinksHide');
+    linksList.classList.toggle('timeToHide');
 })
 
 function loadHideState() { 
@@ -863,7 +863,7 @@ function loadHideState() {
         blockTime.classList.toggle('timeToHide');
     }
     if(localStorage.getItem('isLinksHide') == 'true') {
-        blockLinks.classList.toggle('timeToHide');
+        linksList.classList.toggle('timeToHide');
     }
 }
 
